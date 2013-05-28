@@ -1,17 +1,14 @@
 package org.uqbar.examples.microprocesador.scala.parser;
 
 import org.uqbar.examples.microprocesador.scala._
-import org.uqbar.examples.microprocesador.scala.decorator.InstructionReader
-import org.uqbar.examples.microprocesador.scala.decorator.ProgramReader
-import org.uqbar.examples.microprocesador.scala.factories.WhileNonZeroFactory
 import org.uqbar.examples.microprocesador.scala.instrucciones._
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.ArrayBuffer
 
 trait InstructionFactory {
-	def code: Data
-	def createInstruction(reader: InstructionReader): Instruction 
+	def code: OpCode
+	def create(reader: ProgramReader, builder: ProgramBuilder): Unit
 }
 
 class Parser {
@@ -25,35 +22,40 @@ class Parser {
 	 * Se crea el lector de instrucciones. Y se crea un mapa con las
 	 * instrucciones
 	 */
-	addInstructionFactory(Add)
-	addInstructionFactory(Swap)
-	addInstructionFactory(new LoadValue)
-	addInstructionFactory(new StoreIntoAddress)
-	addInstructionFactory(new WhileNonZeroFactory(this))
+	defineFactories(
+		Add,
+		Swap,
+		new LoadValue,
+		new StoreIntoAddress,
+		new WhileNonZeroFactory)
 
-	protected def addInstructionFactory(factory: InstructionFactory) = factories.put(factory.code, factory)
+	protected def defineFactories(newFactories: InstructionFactory*) =
+		for (factory ← newFactories) { factories.put(factory.code, factory) }
 
 	// ************************************************************************
 	// ** Parseo
 	// ************************************************************************
 
-	def parse(instructions: Array[Data]): Seq[Instruction] = parse(new ProgramReader(instructions))
+	def parse(instructions: Array[Data]): Program = parse(new ProgramReader(instructions))
 
-	def parse(reader: InstructionReader): Seq[Instruction] = {
-		var output = new ArrayBuffer[Instruction]
-		while (reader.hasNext()) {
-			output += readInstruction(reader)
+	def parse(implicit reader: ProgramReader): Program = {
+		val builder = new ProgramBuilder
+		while (reader.hasNext) {
+			val opCode = reader.readByte
+			val factory = getInstructionFactory(opCode)
+			factory create(reader, builder)	
 		}
-
-		output.toList
+		
+		builder.build
 	}
 
-	def readInstruction(reader: InstructionReader) = getInstructionFactory(reader.readByte(), reader).createInstruction(reader)
-
-	private def getInstructionFactory(instructionCode: Data, reader: InstructionReader) = {
+	private def getInstructionFactory(instructionCode: Data)(implicit reader: ProgramReader) = {
 		this.factories.get(instructionCode) match {
 			case Some(factory) ⇒ factory
-			case None ⇒ throw new UnknownInstructionCodeException(instructionCode, reader.getPosition())
+			case None ⇒ throw new UnknownInstructionCodeException(instructionCode, reader.position)
 		}
 	}
 }
+
+class UnknownInstructionCodeException(instructionCode: OpCode, position: Int)
+	extends Exception("Unknown instruction code: " + instructionCode + " at position: " + position) 

@@ -1,11 +1,10 @@
 package org.uqbar.examples.microprocesador.scala.instrucciones;
 
 import org.uqbar.examples.microprocesador.scala._
-import org.uqbar.examples.microprocesador.scala.decorator.InstructionReader
-import org.uqbar.examples.microprocesador.scala.parser.InstructionFactory
+import org.uqbar.examples.microprocesador.scala.parser._
 
 abstract class SingleByteInstruction(code: Data) extends Instruction(code) with InstructionFactory {
-	override def createInstruction(reader: InstructionReader) = this
+	override def create(reader: ProgramReader, builder: ProgramBuilder) = builder addInstruction this
 }
 
 case object Add extends SingleByteInstruction(1) {

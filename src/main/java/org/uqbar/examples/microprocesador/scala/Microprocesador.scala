@@ -12,20 +12,15 @@ class Microprocesador extends ByteManipulation {
 	var b: Data = 0
 
 	def execute(instruction: Instruction) = instruction.execute(this)
-	
-	def ejecutar(instrucciones: Array[Byte]) {
+
+	def ejecutar(instrucciones: Array[OpCode]) {
 		val programa = new Parser().parse(instrucciones)
-		println(programa)
-		
-		for (instruction <- programa) {
-			println(instruction)
-			execute(instruction)
-		}
+		execute(programa)
 	}
-	
-	def updateAccumulators(suma: Address) {
-		a = lowPart(suma)
-		b = highPart(suma)
+
+	def updateAccumulators(word: Address) = {
+		a = lowPart(word)
+		b = highPart(word)
 	}
 
 	override def toString = "A: " + a + ", B: " + b + ", data: " + data
@@ -33,6 +28,10 @@ class Microprocesador extends ByteManipulation {
 
 trait ByteManipulation {
 	implicit def asData(i: Int): Data = i.asInstanceOf[Data]
+
 	def highPart(address: Address): Data = (address & 0xFF00) >> 8
 	def lowPart(address: Address): Data = address & 0xFF
+	def split(address: Address): (Data, Data) = (highPart(address), lowPart(address))
+	
+	def asAddress(high: Data, low: Data) = (high << 8) + low
 }

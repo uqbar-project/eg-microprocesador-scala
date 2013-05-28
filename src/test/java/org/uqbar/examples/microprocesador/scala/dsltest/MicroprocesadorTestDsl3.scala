@@ -1,4 +1,4 @@
-package org.uqbar.examples.microprocesador.scala.test
+package org.uqbar.examples.microprocesador.scala.dsltest
 
 import org.scalatest._
 import org.uqbar.examples.microprocesador.scala._

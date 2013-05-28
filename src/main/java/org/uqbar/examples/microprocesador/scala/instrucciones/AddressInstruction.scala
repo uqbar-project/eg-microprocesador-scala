@@ -1,16 +1,17 @@
 package org.uqbar.examples.microprocesador.scala.instrucciones;
 
 import org.uqbar.examples.microprocesador.scala._
-import org.uqbar.examples.microprocesador.scala.decorator.InstructionReader
 import org.uqbar.examples.microprocesador.scala.parser.InstructionFactory
+import org.uqbar.examples.microprocesador.scala.parser.ProgramBuilder
+import org.uqbar.examples.microprocesador.scala.parser.ProgramReader
 
 abstract class AddressInstruction(code: Data) extends Instruction(code) with Cloneable with InstructionFactory {
 	var address: Address = _
 
-	override def createInstruction(reader: InstructionReader) = {
+	override def create(reader: ProgramReader, builder: ProgramBuilder) = {
 		val nueva = this.clone.asInstanceOf[AddressInstruction] 
 		nueva.address = reader.readAddress 
-		nueva
+		builder addInstruction nueva
 	}
 }
 

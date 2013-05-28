@@ -1,8 +1,7 @@
 package org.uqbar.examples.microprocesador.scala.instrucciones;
 
 import org.uqbar.examples.microprocesador.scala._
-import org.uqbar.examples.microprocesador.scala.decorator.InstructionReader
-import org.uqbar.examples.microprocesador.scala.parser.InstructionFactory
+import org.uqbar.examples.microprocesador.scala.parser._
 
 object LoadValue {
 	def apply(value: Data): LoadValue = new LoadValue(value)
@@ -18,9 +17,9 @@ case class LoadValue extends Instruction(7) with Cloneable with InstructionFacto
 
 	override def execute(micro: Microprocesador) = micro.a = value
 
-	override def createInstruction(reader: InstructionReader) = {
+	override def create(reader: ProgramReader, builder: ProgramBuilder) = {
 		val nueva = this.clone.asInstanceOf[LoadValue]
 		nueva.value = reader.readByte
-		nueva
+		builder addInstruction nueva
 	}
 }
