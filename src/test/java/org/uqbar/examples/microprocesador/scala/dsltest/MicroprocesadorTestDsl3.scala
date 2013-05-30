@@ -3,8 +3,9 @@ package org.uqbar.examples.microprocesador.scala.dsltest
 import org.scalatest._
 import org.uqbar.examples.microprocesador.scala._
 import org.uqbar.examples.microprocesador.scala.instrucciones._
+import org.uqbar.examples.microprocesador.scala.test.MicroprocessorTest
 
-class MicroprocesadorTestDsl3 extends MicroprocessorTest with FunSuite with ShouldMatchers {
+class MicroprocesadorTestDsl3 extends FunSuite with ShouldMatchers {
 	implicit var micro: Microprocesador = _
 
 	testProgram("add 2 + 4 = 6") {

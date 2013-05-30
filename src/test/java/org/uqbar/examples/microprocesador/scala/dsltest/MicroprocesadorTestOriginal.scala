@@ -17,7 +17,7 @@ class MicroprocesadorTestOriginal {
 		)
 		
 		val micro = new Microprocesador
-		micro ejecutar program
+		micro execute program
 		
 		Assert.assertEquals(6, micro.data(0))
 	}

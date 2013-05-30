@@ -1,10 +1,16 @@
 package org.uqbar.examples.microprocesador.scala.parser;
 
-import org.uqbar.examples.microprocesador.scala._
-import org.uqbar.examples.microprocesador.scala.instrucciones._
 import scala.collection.mutable.HashMap
-import scala.collection.mutable.ListBuffer
-import scala.collection.mutable.ArrayBuffer
+import org.uqbar.examples.microprocesador.scala.Data
+import org.uqbar.examples.microprocesador.scala.OpCode
+import org.uqbar.examples.microprocesador.scala.instrucciones.Add
+import org.uqbar.examples.microprocesador.scala.instrucciones.LoadFromAddress
+import org.uqbar.examples.microprocesador.scala.instrucciones.LoadValue
+import org.uqbar.examples.microprocesador.scala.instrucciones.Program
+import org.uqbar.examples.microprocesador.scala.instrucciones.StoreIntoAddress
+import org.uqbar.examples.microprocesador.scala.instrucciones.Sub
+import org.uqbar.examples.microprocesador.scala.instrucciones.Swap
+import org.uqbar.examples.microprocesador.scala.instrucciones.WhileNonZero
 
 trait InstructionFactory {
 	def code: OpCode
@@ -24,10 +30,13 @@ class Parser {
 	 */
 	defineFactories(
 		Add,
+		Sub,
 		Swap,
-		new LoadValue,
-		new StoreIntoAddress,
-		new WhileNonZeroFactory)
+		LoadValue,
+		LoadFromAddress,
+		StoreIntoAddress,
+		WhileNonZero,
+		EndHandler)
 
 	protected def defineFactories(newFactories: InstructionFactory*) =
 		for (factory ← newFactories) { factories.put(factory.code, factory) }
@@ -59,3 +68,9 @@ class Parser {
 
 class UnknownInstructionCodeException(instructionCode: OpCode, position: Int)
 	extends Exception("Unknown instruction code: " + instructionCode + " at position: " + position) 
+
+object EndHandler extends InstructionFactory {
+	override def code = 16
+	override def create(reader: ProgramReader, builder: ProgramBuilder) = builder.endComposite
+}
+

@@ -14,7 +14,7 @@ class MicroprocesadorTestScalaSpec extends FlatSpec with ShouldMatchers {
 		)
 
 		val micro = new Microprocesador
-		micro ejecutar program
+		micro execute program
 
 		micro.data(0) should equal (6)
 	}

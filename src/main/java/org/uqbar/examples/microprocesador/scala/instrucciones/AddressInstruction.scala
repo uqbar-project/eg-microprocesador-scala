@@ -5,13 +5,17 @@ import org.uqbar.examples.microprocesador.scala.parser.InstructionFactory
 import org.uqbar.examples.microprocesador.scala.parser.ProgramBuilder
 import org.uqbar.examples.microprocesador.scala.parser.ProgramReader
 
-abstract class AddressInstruction(code: Data) extends Instruction(code) with Cloneable with InstructionFactory {
-	var address: Address = _
+abstract class AddressInstruction(address: Address) extends Instruction {
+	override def toString = getClass.getSimpleName + "(" + address + ")"
+}
+
+trait AddressInstructionFactory extends InstructionFactory {
+	def apply(address: Address): AddressInstruction
 
 	override def create(reader: ProgramReader, builder: ProgramBuilder) = {
-		val nueva = this.clone.asInstanceOf[AddressInstruction] 
-		nueva.address = reader.readAddress 
-		builder addInstruction nueva
+		val address = reader.readAddress
+		val instruction = apply(address)
+		builder addInstruction instruction
 	}
 }
 
@@ -19,16 +23,11 @@ abstract class AddressInstruction(code: Data) extends Instruction(code) with Clo
 // ** LoadFromAddress
 // ****************************************************************************
 
-object LoadFromAddress {
-	def apply(value: Address): LoadFromAddress = new LoadFromAddress(value)
+object LoadFromAddress extends AddressInstructionFactory {
+	override def code = 8
 }
 
-class LoadFromAddress extends AddressInstruction(8) {
-	def this(address: Address) {
-		this()
-		this.address = address
-	}
-
+case class LoadFromAddress(address: Address) extends AddressInstruction(address) {
 	override def execute(micro: Microprocesador) = micro.a = micro.data(address)
 }
 
@@ -36,15 +35,10 @@ class LoadFromAddress extends AddressInstruction(8) {
 // ** StoreIntoAddress
 // ****************************************************************************
 
-object StoreIntoAddress {
-	def apply(value: Address): StoreIntoAddress = new StoreIntoAddress(value)
+object StoreIntoAddress extends AddressInstructionFactory  {
+	override def code = 9
 }
 
-case class StoreIntoAddress extends AddressInstruction(9) {
-	def this(address: Address) {
-		this()
-		this.address = address
-	}
-
+case class StoreIntoAddress(address: Address) extends AddressInstruction(address) {
 	override def execute(micro: Microprocesador) = micro.data(address) = micro.a
 }
