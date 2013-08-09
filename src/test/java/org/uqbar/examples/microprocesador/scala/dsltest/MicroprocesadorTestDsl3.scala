@@ -17,6 +17,7 @@ class MicroprocesadorTestDsl3 extends FunSuite with ShouldMatchers {
 		accumB should equal (2)
 
 		ADD
+
 		STR(0)
 
 		data(0) should equal (6)

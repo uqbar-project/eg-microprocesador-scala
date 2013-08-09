@@ -7,7 +7,7 @@ import org.uqbar.examples.microprocesador.scala.Microprocesador
 class MicroprocesadorTestOriginal {
 
 	@Test
-	def simpleProgram = {
+	def sumaSimple = {
 		val program = Array[Byte] (
 			7, 2,    // 0: LODV 2
 			5,       // 2: SWAP 

@@ -42,6 +42,6 @@ class TestProgram extends ByteManipulation {
 	def WHNZ = add(14)
 	def END = add(16)
 	
-	def add(data: Byte*) = programBuffer ++= data
+	private def add(data: Byte*) = programBuffer ++= data
 	def toArray = programBuffer.toArray
 }
